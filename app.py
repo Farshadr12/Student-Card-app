@@ -16,7 +16,7 @@ for i in tqdm(range(100)):
 
     for row in csv_reader:
         background_image = Image.open(background_path)
-        if row[3] == True:
+        if row[3]:
             foreground_path = row[4]
             foto_user = Image.open(foreground_path)
         else:
