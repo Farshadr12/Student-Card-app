@@ -1,5 +1,19 @@
 import tkinter as tk
-import csv
+from tkinter import filedialog
+import sqlite3
+import os
+
+window = tk.Tk()
+window.title("Card Maker for University")
+
+
+def create_table():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS students
+                 (id TEXT PRIMARY KEY, name TEXT, matricola TEXT, enrollment_date TEXT, study_field TEXT)''')
+    conn.commit()
+    conn.close()
 
 
 def submitBtn():
@@ -9,26 +23,12 @@ def submitBtn():
     study_field = student_field.get()
 
     try:
-        with open('database.csv', 'r', newline='') as file:
-            try:
-                is_empty = not file.read(1)
-            except io.UnsupportedOperation:
-                is_empty = True
-
-        with open('database.csv', 'a', newline='') as file:
-            writer = csv.writer(file, delimiter=";")
-
-            if not is_empty:
-                file.seek(0, 2)
-                if file.tell() > 0:
-                    file.seek(file.tell() - 2, 0)
-                    last_char = file.read(1)
-                    if last_char != '\n':
-                        writer.writerow([])
-
-            writer.writerow(
-                [name, student_matricola, enrollment_date, study_field])
-
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO students (name, matricola, enrollment_date, study_field) VALUES (?, ?, ?, ?)",
+                  (name, student_matricola, enrollment_date, study_field))
+        conn.commit()
+        conn.close()
     except Exception as e:
         print("Error occurred:", e)
 
@@ -39,8 +39,21 @@ def submitBtn():
     student_field.delete(0, 'end')
 
 
-window = tk.Tk()
-window.title("Card Maker for University")
+def browse_pic():
+    file_path = filedialog.askopenfilename()
+    selected_profile_pic.set(file_path)
+
+
+selected_profile_pic = tk.StringVar()
+
+
+def save_pic():
+    result_path = "src/prfilepicture/P{id}.jpg".format(id=student_id.get())
+
+    selected_profile_pic.save(result_path, format="PNG")
+
+
+create_table()
 
 greeting = tk.Label(window, text="Card maker for university !")
 greeting.grid(row=0, column=0, columnspan=2)
@@ -64,6 +77,12 @@ date_label = tk.Label(window, text="Enrollment Date:")
 date_label.grid(row=4, column=0)
 student_date = tk.Entry(window)
 student_date.grid(row=4, column=1)
+
+pic_label = tk.Label(window, text="Profile Picture:")
+pic_label.grid(row=5, column=0)
+pic_button = tk.Button(window, text="Browse", command=browse_pic)
+pic_button.grid(row=5, column=1)
+
 
 create_button = tk.Button(window, text="Submit Data", command=submitBtn)
 create_button.grid(row=5, column=0, columnspan=2)

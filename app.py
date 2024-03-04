@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
-import csv
+import sqlite3
 from time import sleep
 from tqdm import tqdm
 
@@ -8,21 +8,27 @@ code_path = "barcodevan.png"
 font_path = "src/ARIALBD.TTF"
 
 
-database = open('database.csv', 'r')
-csv_reader = csv.reader(database, delimiter=';')
+def fetch_data_from_database():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM students")
+    rows = c.fetchall()
+    conn.close()
+    return rows
 
 
 for i in tqdm(range(100)):
-
-    for row in csv_reader:
+    for row in fetch_data_from_database():
         background_image = Image.open(background_path)
-
-        if row[4]:
-            foreground_path = row[4]
-            foto_user = Image.open(foreground_path)
-        else:
-            foto_default = "src/profiles/default.png"
-            foto_user = Image.open(foto_default)
+        try:
+            if row[4]:
+                foreground_path = row[4]
+                foto_user = Image.open(foreground_path)
+            else:
+                foto_default = "src/profiles/default.png"
+                foto_user = Image.open(foto_default)
+        except Exception as e:
+            print("Error occurred:", e)
 
         name_user = row[0]
         id_user = row[1]
