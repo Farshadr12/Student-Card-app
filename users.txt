@@ -1,3 +1,1 @@
-Farshad Rouzbehi,B3400040d,2022 / 23,Data Analysis,src/profiles/farshad.jpg
-ddd Rouzbehi,B3400040d,2022 / 23,Data Analysis,src/profiles/farshad.jpg
-ss Rouzbehi,B3400040d,2022 / 23,Data Analysis
+Farshad Rouzbehi,B34000405,2022 / 23,Data Analysis,src/profiles/farshad.jpg

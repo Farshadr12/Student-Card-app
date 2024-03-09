@@ -2,28 +2,27 @@ from PIL import Image, ImageDraw, ImageFont
 from time import sleep
 from tqdm import tqdm
 import os
-from flask import Flask, request
 
 background_path = "src/card_background.jpg"
 code_path = "barcodevan.png"
 font_path = "src/ARIALBD.TTF"
 
-app = Flask(__name__)
-@app.route('/')
-def index():
-    return open('index.html').read()
+# app = Flask(__name__)
+# @app.route('/')
+# def index():
+#     return open('index.html').read()
+
 
 
 def MakeCard():
     with open('users.txt', 'r') as file:
         lines = file.readlines()
 
-    for i in tqdm(range(1)):
+    for i in tqdm(range(len(lines))):
 
         for line in lines:
             row = line.strip().split(',')
             background_image = Image.open(background_path)
-            print(row)
 
             if len(row) >= 5 and os.path.exists(row[4]):
                 foreground_path = row[4]
@@ -62,8 +61,68 @@ def MakeCard():
             result_path = "output/{name} Cart.jpg".format(name=name_user)
             background_image.save(result_path, format="PNG")
 
-        sleep(0.001)
+        sleep(0.0001)
+    print("Card Generated successfully!")
+
+def AddUser():
+    userEntry = []
+
+    # Prompt the user for input
+    name = input("Enter user name: ")
+    userEntry.append(name)
+
+    id = input("Enter user ID: ")
+    userEntry.append(id)
+
+    date = input("Enter user date: ")
+    userEntry.append(date)
+
+    field = input("Enter user field: ")
+    userEntry.append(field)
+
+    picture = input("Enter user picture path: ")
+    userEntry.append(picture)
+
+    # Check if the last character in the file is a comma
+    with open('users.txt', 'r') as file:
+        last_char = file.read()[-1:]
+    if last_char:
+        # Start the new user entry on a new line
+        with open('users.txt', 'a') as file:
+            file.write('\n')
+
+    # Write the user entry to the users.txt file
+    with open('users.txt', 'a') as file:
+        file.write(','.join(userEntry))
+
+    print("User added successfully!")
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+while True:
+    print('Welcome to app')
+    print('please select an item')
+    print()
+    print('''1- to make the cards
+2- to enter a new data
+0- to exit''')
+
+    user_select = int(input('select menu number > '))
+    if user_select == 0:
+        break
+    if user_select == 1:
+        MakeCard()
+        print('''
+
+''')
+    if user_select == 2:
+        AddUser()
+        print('''
+
+''')
+    else:
+        print('please select an itme')
